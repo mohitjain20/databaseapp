@@ -72,5 +72,32 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == WORD_EDIT) {
+            if (resultCode == RESULT_OK) {
+                String word = data.getStringExtra(EditWordActivity.EXTRA_REPLY);
+
+                // Update the database.
+                if (!TextUtils.isEmpty(word)) {
+                    int id = data.getIntExtra(WordListAdapter.EXTRA_ID, -99);
+
+                    if (id == WORD_ADD) {
+                        mDB.insert(word);
+                    } else if (id >= 0) {
+                        mDB.update(id, word);
+                    }
+                    // Update the UI.
+                    mAdapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(
+                            getApplicationContext(),
+                            R.string.empty_word_not_saved,
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
 
 }
